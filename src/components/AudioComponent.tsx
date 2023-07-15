@@ -9,14 +9,8 @@ import {
 } from '../helpers/animationHelperFunctions';
 
 const AudioComponent = () => {
-  const {
-    recordingState,
-    setRecordingState,
-    audio,
-    setAudio,
-    audioChunks,
-    setAudioChunks
-  } = useAudioContext();
+  const { setRecordingState, audio, audioChunks, setAudioChunks } =
+    useAudioContext();
   const { sendData } = useWebSocketContext();
   let audioRef;
   let rotationTween;
@@ -25,16 +19,9 @@ const AudioComponent = () => {
   let mouseEdge = 160;
   let mousePos = 0;
 
-  const [distance, setDistance] = createSignal<integer>(0);
-  const [boop, setBoop] = createSignal<Boolean>(false);
   const [containerRef, setContainerRef] = createSignal<HTMLDivElement>();
   const [isScaleTweenActive, setIsScaleTweenActive] =
     createSignal<String>('no');
-  const [particlesRef, setParticlesRef] =
-    createSignal<THREE.Points<THREE.BufferGeometry>>();
-  const [renderingParentRef, setRenderingParentRef] =
-    createSignal<THREE.Group>();
-  let initialRotation = { x: 0, y: 0 };
   const [animProps, setAnimProps] = createSignal({
     scale: 1,
     xRot: 0,

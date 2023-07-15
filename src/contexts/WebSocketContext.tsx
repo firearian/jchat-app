@@ -5,7 +5,6 @@ import {
   createSignal,
   createEffect
 } from 'solid-js';
-import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
 import { useAudioContext } from './AudioContext';
 const MAX_RECONNECT_ATTEMPTS = 5; // Maximum number of reconnection attempts
 const RECONNECT_DELAY_MS = 3000; // Delay between reconnection attempts in milliseconds
@@ -16,18 +15,21 @@ export const WebSocketContext = createContext();
 
 export function WebSocketContextProvider(props) {
   const { setAudioData } = useAudioContext();
-  const [mediaRecorder, setMediaRecorder] = createSignal<MediaRecorder>();
-  const [recordingState, setRecordingState] = createSignal<string>();
   const [socket, setSocket] = createSignal<string>();
   const [audio, setAudio] = createSignal<string>();
-  const [audioChunks, setAudioChunks] = createSignal<string>();
 
   createEffect(() => {
     console.log('audio!!!!!!!!', audio());
   });
 
+  // https://2e96-2a00-23c7-2b28-1b01-49af-8b43-1314-da87.ngrok-free.app
   function connectWebSocket() {
-    setSocket(new WebSocket('ws://localhost:3001'));
+    setSocket(
+      new WebSocket(
+        'ws://2e96-2a00-23c7-2b28-1b01-49af-8b43-1314-da87.ngrok-free.app'
+      )
+    );
+    // setSocket(new WebSocket('ws://localhost:3001'));
 
     socket().onopen = () => {
       console.log('WebSocket connected');
