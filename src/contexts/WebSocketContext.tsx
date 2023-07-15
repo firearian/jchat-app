@@ -26,7 +26,7 @@ export function WebSocketContextProvider(props) {
   function connectWebSocket() {
     setSocket(
       new WebSocket(
-        'ws://2e96-2a00-23c7-2b28-1b01-49af-8b43-1314-da87.ngrok-free.app'
+        'wss://2e96-2a00-23c7-2b28-1b01-49af-8b43-1314-da87.ngrok-free.app'
       )
     );
     // setSocket(new WebSocket('ws://localhost:3001'));
