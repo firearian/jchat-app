@@ -1,0 +1,90 @@
+//@ts-nocheck
+import {
+  createContext,
+  useContext,
+  createSignal,
+  createEffect
+} from 'solid-js';
+import RecordRTC, { invokeSaveAsDialog } from 'recordrtc';
+import { useAudioContext } from './AudioContext';
+const MAX_RECONNECT_ATTEMPTS = 5; // Maximum number of reconnection attempts
+const RECONNECT_DELAY_MS = 3000; // Delay between reconnection attempts in milliseconds
+
+let reconnectAttempts = 0;
+
+export const WebSocketContext = createContext();
+
+export function WebSocketContextProvider(props) {
+  const { setAudioData } = useAudioContext();
+  const [mediaRecorder, setMediaRecorder] = createSignal<MediaRecorder>();
+  const [recordingState, setRecordingState] = createSignal<string>();
+  const [socket, setSocket] = createSignal<string>();
+  const [audio, setAudio] = createSignal<string>();
+  const [audioChunks, setAudioChunks] = createSignal<string>();
+
+  createEffect(() => {
+    console.log('audio!!!!!!!!', audio());
+  });
+
+  function connectWebSocket() {
+    setSocket(new WebSocket('ws://localhost:3001'));
+
+    socket().onopen = () => {
+      console.log('WebSocket connected');
+      reconnectAttempts = 0; // Reset reconnection attempts on successful connection
+    };
+
+    // Connection opened event
+    socket().addEventListener('open', () => {
+      console.log('WebSocket connection established');
+      // Send a message to the server
+      socket().send('Hello, server!');
+    });
+
+    // Message received event
+    socket().addEventListener('message', (event) => {
+      setAudioData(event.data);
+    });
+
+    // Connection closed event
+    socket().addEventListener('close', () => {
+      console.log('WebSocket connection closed');
+      if (reconnectAttempts < MAX_RECONNECT_ATTEMPTS) {
+        reconnectAttempts++;
+        console.log(
+          `Reconnecting in ${RECONNECT_DELAY_MS}ms (attempt ${reconnectAttempts})`
+        );
+        setTimeout(connectWebSocket, RECONNECT_DELAY_MS);
+      } else {
+        console.log('Maximum reconnection attempts reached');
+      }
+    });
+
+    // Error occurred event
+    socket().addEventListener('error', (event) => {
+      console.error('WebSocket error:', event.error);
+    });
+  }
+  connectWebSocket();
+
+  function sendData(data) {
+    console.log('Sending data to WS server');
+    socket().send(data);
+  }
+
+  return (
+    <WebSocketContext.Provider
+      value={{
+        sendData,
+        audio,
+        setAudio
+      }}
+    >
+      {props.children}
+    </WebSocketContext.Provider>
+  );
+}
+
+export const useWebSocketContext = function () {
+  return useContext(WebSocketContext);
+};
