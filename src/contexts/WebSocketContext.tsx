@@ -24,11 +24,7 @@ export function WebSocketContextProvider(props) {
 
   // https://2e96-2a00-23c7-2b28-1b01-49af-8b43-1314-da87.ngrok-free.app
   function connectWebSocket() {
-    setSocket(
-      new WebSocket(
-        'wss://39ce-2a00-23c7-2b28-1b01-d9f2-d86f-d92f-9b44.ngrok-free.app'
-      )
-    );
+    setSocket(new WebSocket(import.meta.env.VITE_NGROK));
     // setSocket(new WebSocket('ws://localhost:3001'));
 
     socket().onopen = () => {
